@@ -1,0 +1,254 @@
+ServerD测试结果
+
+测试结果从前往后  D / C / B
+
+测试统计结果QPS： 比较异常的主要有  交易页  和  API 6的QPS  下面提供了 SQL 记录
+
+helloworld:    QPS: 240 (符合实际场景)
+主页QPS    40 /  40 / 40   (受限于测试机的下载速度，真实QPS应该大于40 )
+交易页QPS  .25 / 2.2 / 2.5  (QPS太低，待优化 可能原因分析： 数据库操作造成的)
+
+API 1:      kline (数据: 52KB \ 47KB )                          QPS:  7 / 37 
+API 2:      getDepth (数据: 约0.5KB  大小465B  )                QPS:  52 / 51 
+API 3:      getJsonTop (数据: 约0.8KB  大小740B  )              QPS:  43 / 56
+API 4:      getTradelog  (数据: 1.2KB )                         QPS:  62 / 57
+API 5:      getEntrustAndUsercoin  (数据: 约0.5KB  大小312B  )   QPS:  46 / 57
+API 6:      getEntrustHistory (数据: 1KB    )                   QPS:   42 / 11
+
+
+
+
+
+helloworld:    QPS: 240 (符合实际场景)
+
+
+主页QPS   40 /  40 / 40   (受限于测试机的下载速度，真实QPS应该大于40 )  -c 200 -n 2000
+Server Software:        
+Server Hostname:        www.meicoin.pro
+Server Port:            80
+
+Document Path:          /
+Document Length:        37819 bytes
+
+Concurrency Level:      200
+Time taken for tests:   46.420 seconds
+Complete requests:      1830
+Failed requests:        58
+   (Connect: 0, Receive: 0, Length: 58, Exceptions: 0)
+Non-2xx responses:      1999
+Total transferred:      71928272 bytes
+HTML transferred:       71013550 bytes
+Requests per second:    39.42 [#/sec] (mean)
+Time per request:       5073.277 [ms] (mean)
+Time per request:       25.366 [ms] (mean, across all concurrent requests)
+Transfer rate:          1513.18 [Kbytes/sec] received
+
+Connection Times (ms)
+              min  mean[+/-sd] median   max
+Connect:       38  117 296.1     40    3077
+Processing:   101 1073 1239.5    662   17783
+Waiting:       98  309 529.2    111    6444
+Total:        139 1190 1282.4    746   17826
+
+
+交易页QPS  2.5 /  2.2 / 2.5   (QPS太低，待优化 可能原因分析： 数据库操作造成的)
+Server Software:        
+Server Hostname:        www.meicoin.pro
+Server Port:            80
+
+Document Path:          /Trade/index/market/mc_eth.html
+Document Length:        69639 bytes
+
+Concurrency Level:      200
+Time taken for tests:   32.908 seconds
+Complete requests:      82
+Failed requests:        19
+   (Connect: 0, Receive: 0, Length: 19, Exceptions: 0)
+Non-2xx responses:      19
+Total transferred:      4417403 bytes
+HTML transferred:       4392587 bytes
+Requests per second:    2.49 [#/sec] (mean)
+Time per request:       80262.288 [ms] (mean)
+Time per request:       401.311 [ms] (mean, across all concurrent requests)
+Transfer rate:          131.09 [Kbytes/sec] received
+
+Connection Times (ms)
+              min  mean[+/-sd] median   max
+Connect:       38   42   3.6     41      50
+Processing:   779 14931 9344.3  14651   32594
+Waiting:      623 14817 9321.3  14494   32433
+Total:        818 14973 9343.8  14691   32634
+
+
+
+
+API 1:      kline (数据:  51.9KB / 47KB )  QPS: 7  / 37  ( 这个API  服务器C 的请求数  低很多 )
+Server Software:        
+Server Hostname:        www.meicoin.pro
+Server Port:            80
+
+Document Path:          /Home/Ajax/kline?market=mc_eth
+Document Length:        51947 bytes
+
+Concurrency Level:      200
+Time taken for tests:   249.606 seconds
+Complete requests:      1824
+Failed requests:        341
+   (Connect: 0, Receive: 0, Length: 341, Exceptions: 0)
+Non-2xx responses:      341
+Total transferred:      77778861 bytes
+HTML transferred:       77163535 bytes
+Requests per second:    7.31 [#/sec] (mean)
+Time per request:       27369.133 [ms] (mean)
+Time per request:       136.846 [ms] (mean, across all concurrent requests)
+Transfer rate:          304.30 [Kbytes/sec] received
+
+
+
+
+API 2:      getDepth (数据: 约0.5KB  大小465B  )                QPS:  52  / 51 
+Server Software:        
+Server Hostname:        www.meicoin.pro
+Server Port:            80
+
+Document Path:          /Ajax/getDepth?market=mc_eth&jjcoin=btc&trade_moshi=1&t=0.5430994790632493
+Document Length:        446 bytes
+
+Concurrency Level:      200
+Time taken for tests:   37.819 seconds
+Complete requests:      2000
+Failed requests:        2
+   (Connect: 0, Receive: 0, Length: 2, Exceptions: 0)
+Non-2xx responses:      2
+Total transferred:      1653260 bytes
+HTML transferred:       891706 bytes
+Requests per second:    52.88 [#/sec] (mean)
+Time per request:       3781.928 [ms] (mean)
+Time per request:       18.910 [ms] (mean, across all concurrent requests)
+Transfer rate:          42.69 [Kbytes/sec] received
+
+Connection Times (ms)
+              min  mean[+/-sd] median   max
+Connect:       38   40   2.1     40      49
+Processing:    63 3216 4436.2   2299   32105
+Waiting:       63 3216 4436.2   2299   32105
+Total:        101 3256 4436.1   2340   32142
+
+API 3:      getJsonTop (数据: 约0.8KB  大小740B  )              QPS: 43 / 56
+Server Software:        
+Server Hostname:        www.meicoin.pro
+Server Port:            80
+
+Document Path:          /Ajax/getJsonTop?market=mc_eth&t=0.7273979342648424
+Document Length:        746 bytes
+
+Concurrency Level:      200
+Time taken for tests:   46.796 seconds
+Complete requests:      1993
+Failed requests:        46
+   (Connect: 0, Receive: 0, Length: 46, Exceptions: 0)
+Non-2xx responses:      46
+Total transferred:      2215291 bytes
+HTML transferred:       1466216 bytes
+Requests per second:    42.59 [#/sec] (mean)
+Time per request:       4696.009 [ms] (mean)
+Time per request:       23.480 [ms] (mean, across all concurrent requests)
+Transfer rate:          46.23 [Kbytes/sec] received
+
+Connection Times (ms)
+              min  mean[+/-sd] median   max
+Connect:       38   40   2.3     40      51
+Processing:    65 4245 3865.4   3201   44466
+Waiting:       65 4245 3865.4   3201   44466
+Total:        103 4285 3866.2   3241   44514
+
+
+API 4:      getTradelog  (数据: 1.2KB )                         QPS: 62 / 57
+Server Software:        
+Server Hostname:        www.meicoin.pro
+Server Port:            80
+
+Document Path:          /Ajax/getTradelog?market=mc_eth&jjcoin=btc&t=0.5559218781360911
+Document Length:        1249 bytes
+
+Concurrency Level:      200
+Time taken for tests:   31.979 seconds
+Complete requests:      2000
+Failed requests:        16
+   (Connect: 0, Receive: 0, Length: 16, Exceptions: 0)
+Non-2xx responses:      16
+Total transferred:      3241232 bytes
+HTML transferred:       2482800 bytes
+Requests per second:    62.54 [#/sec] (mean)
+Time per request:       3197.901 [ms] (mean)
+Time per request:       15.990 [ms] (mean, across all concurrent requests)
+Transfer rate:          98.98 [Kbytes/sec] received
+
+Connection Times (ms)
+              min  mean[+/-sd] median   max
+Connect:       38   40   2.2     40      51
+Processing:    58 2594 2851.4   1914   31288
+Waiting:       58 2594 2851.4   1914   31288
+Total:         97 2634 2852.2   1954   31327
+
+
+API 5:      getEntrustAndUsercoin  (数据: 约0.5KB  大小312B  )   QPS: 46 / 57
+Server Software:        
+Server Hostname:        www.meicoin.pro
+Server Port:            80
+
+Document Path:          /Ajax/getEntrustAndUsercoin?market=mc_eth&jjcoin=btc&t=0.9793548639787244
+Document Length:        118 bytes
+
+Concurrency Level:      200
+Time taken for tests:   43.492 seconds
+Complete requests:      2000
+Failed requests:        39
+   (Connect: 0, Receive: 0, Length: 39, Exceptions: 0)
+Non-2xx responses:      39
+Total transferred:      996362 bytes
+HTML transferred:       243059 bytes
+Requests per second:    45.99 [#/sec] (mean)
+Time per request:       4349.179 [ms] (mean)
+Time per request:       21.746 [ms] (mean, across all concurrent requests)
+Transfer rate:          22.37 [Kbytes/sec] received
+
+Connection Times (ms)
+              min  mean[+/-sd] median   max
+Connect:       38   40   2.2     40      51
+Processing:    58 2960 2768.1   2178   31156
+Waiting:       58 2960 2768.1   2178   31156
+Total:         97 3000 2768.8   2218   31196
+
+
+API 6:      getEntrustHistory (数据: 1KB    )                   QPS:  42 / 11
+Server Software:        
+Server Hostname:        www.meicoin.pro
+Server Port:            80
+
+Document Path:          /Ajax/getEntrustHistory?market=mc_eth
+Document Length:        1567 bytes
+
+Concurrency Level:      200
+Time taken for tests:   46.542 seconds
+Complete requests:      1959
+Failed requests:        5
+   (Connect: 0, Receive: 0, Length: 5, Exceptions: 0)
+Non-2xx responses:      5
+Total transferred:      3808677 bytes
+HTML transferred:       3063413 bytes
+Requests per second:    42.09 [#/sec] (mean)
+Time per request:       4751.621 [ms] (mean)
+Time per request:       23.758 [ms] (mean, across all concurrent requests)
+Transfer rate:          79.91 [Kbytes/sec] received
+
+Connection Times (ms)
+              min  mean[+/-sd] median   max
+Connect:       38   40   1.9     40      50
+Processing:    62 2988 1373.6   2722   17929
+Waiting:       62 2988 1373.6   2722   17928
+Total:        100 3028 1373.7   2762   17967
+
+
+
+

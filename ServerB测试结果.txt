@@ -1,0 +1,397 @@
+ServerB测试结果
+
+
+测试统计结果QPS： 比较异常的主要有  交易页  和  API 6的QPS  下面提供了 SQL 记录
+
+helloworld:    QPS: 181 (符合实际场景)
+主页QPS     40   (受限于测试机的下载速度，真实QPS应该大于40 )
+交易页QPS   2.5  (QPS太低，待优化 可能原因分析： 数据库操作造成的)
+API 1:      kline (数据: 47KB )  QPS: 5.72  
+API 2:      getDepth (数据: 约0.5KB  大小465B  )                QPS:  5.72 
+API 3:      getJsonTop (数据: 约0.8KB  大小740B  )              QPS:  22
+API 4:      getTradelog  (数据: 1.2KB )                         QPS:  24
+API 5:      getEntrustAndUsercoin  (数据: 约0.5KB  大小312B  )   QPS:  22
+API 6:      getEntrustHistory (数据: 1KB    )                   QPS:  20
+
+
+
+主页QPS  44 (受限于测试机的下载速度，真实QPS应该大于40 )
+
+Server Software:        
+Server Hostname:        www.meicoin.pro
+Server Port:            80
+
+Document Path:          /
+Document Length:        0 bytes
+
+Concurrency Level:      200
+Time taken for tests:   41.101 seconds
+Complete requests:      1826
+Failed requests:        1794
+   (Connect: 0, Receive: 0, Length: 1794, Exceptions: 0)
+Non-2xx responses:      1999
+Total transferred:      72242655 bytes
+HTML transferred:       71297696 bytes
+Requests per second:    44.43 [#/sec] (mean)
+Time per request:       4501.759 [ms] (mean)
+Time per request:       22.509 [ms] (mean, across all concurrent requests)
+Transfer rate:          1716.49 [Kbytes/sec] received
+
+Connection Times (ms)
+              min  mean[+/-sd] median   max
+Connect:       38  124 321.5     40    2590
+Processing:   115 1176 1265.3    691    9547
+Waiting:      105  409 729.0    122    6232
+Total:        155 1301 1318.6    785   10218
+
+
+
+
+访问主页时执行的SQL：
+
+180630 12:23:46	514132 Connect	root@localhost on tjyhy
+		514132 Query	SET NAMES utf8
+		514132 Query	SELECT * FROM `tw_user_log` WHERE `userid` = 153152 AND `type` = 'login' AND `state` = 1 AND `id` < '61559' ORDER BY id desc LIMIT 1
+		514132 Query	SELECT * FROM `tw_user_log` WHERE `userid` = 153152 AND `type` = 'login' AND `state` = 1 AND `id` > '61559' ORDER BY id desc LIMIT 1
+		514132 Query	SELECT * FROM `tw_user` WHERE ( id = 153152 ) LIMIT 1
+		514132 Query	SELECT * FROM `tw_user_log` WHERE `userid` = 153152 AND `type` = 'login' AND `session_key` = 'h4ha4qecupp8ur4pb2tgnoju30' AND `state` = 1 ORDER BY id desc LIMIT 1
+		514132 Query	SELECT * FROM `tw_user_coin` WHERE `userid` = 153152 LIMIT 1
+		514132 Query	SELECT `round` FROM `tw_market` WHERE `name` = 'ltc_btc' LIMIT 1
+		514132 Query	SELECT `title` FROM `tw_coin` WHERE `name` = 'ltc' LIMIT 1
+		514132 Query	SELECT `img` FROM `tw_coin` WHERE `name` = 'ltc' LIMIT 1
+		514132 Query	SELECT `round` FROM `tw_market` WHERE `name` = 'eth_btc' LIMIT 1
+		514132 Query	SELECT `title` FROM `tw_coin` WHERE `name` = 'eth' LIMIT 1
+		514132 Query	SELECT `img` FROM `tw_coin` WHERE `name` = 'eth' LIMIT 1
+		514132 Query	SELECT `round` FROM `tw_market` WHERE `name` = 'btc_btc' LIMIT 1
+		514132 Query	SELECT `title` FROM `tw_coin` WHERE `name` = 'btc' LIMIT 1
+		514132 Query	SELECT `img` FROM `tw_coin` WHERE `name` = 'btc' LIMIT 1
+		514132 Query	SELECT `round` FROM `tw_market` WHERE `name` = 'mc_btc' LIMIT 1
+		514132 Query	SELECT `title` FROM `tw_coin` WHERE `name` = 'mc' LIMIT 1
+		514132 Query	SELECT `img` FROM `tw_coin` WHERE `name` = 'mc' LIMIT 1
+		514132 Query	SELECT `round` FROM `tw_market` WHERE `name` = 'eos_btc' LIMIT 1
+		514132 Query	SELECT `title` FROM `tw_coin` WHERE `name` = 'eos' LIMIT 1
+		514132 Query	SELECT `img` FROM `tw_coin` WHERE `name` = 'eos' LIMIT 1
+		514132 Query	SELECT `round` FROM `tw_market` WHERE `name` = 'bch_btc' LIMIT 1
+		514132 Query	SELECT `title` FROM `tw_coin` WHERE `name` = 'bch' LIMIT 1
+		514132 Query	SELECT `img` FROM `tw_coin` WHERE `name` = 'bch' LIMIT 1
+		514132 Query	SELECT * FROM `tw_link` WHERE `status` = 1 AND `look_type` = 1 ORDER BY sort asc ,id desc
+		514132 Query	SELECT * FROM `tw_article` WHERE `type` = 'notice' AND `status` = 1 AND `index` = 1 ORDER BY id desc LIMIT 1
+		514132 Query	SELECT * FROM `tw_article_type` WHERE `name` = 'notice' LIMIT 1
+		514132 Query	SELECT `price` FROM `tw_trade` WHERE `status` = 0 AND `type` = 1 AND `market` = 'mc_eth' ORDER BY price desc LIMIT 1
+		514132 Query	SELECT `price` FROM `tw_trade` WHERE `status` = 0 AND `type` = 2 AND `market` = 'mc_eth' ORDER BY price asc LIMIT 1
+		514132 Query	SELECT * FROM `tw_market` WHERE `name` = 'mc_eth' LIMIT 1
+		514132 Query	SELECT * FROM `tw_trade_log` WHERE `status` = 1 AND `market` = 'mc_eth' ORDER BY id desc LIMIT 20
+		514132 Query	SELECT `id`,`price`,sum(num-deal)as nums FROM `tw_trade` WHERE `status` = 0 AND `type` = 1 AND `market` = 'mc_eth' GROUP BY price ORDER BY price desc LIMIT 6
+		514132 Query	SELECT `id`,`price`,sum(num-deal)as nums FROM `tw_trade` WHERE `status` = 0 AND `type` = 2 AND `market` = 'mc_eth' GROUP BY price ORDER BY price asc LIMIT 6
+		514132 Query	SELECT * FROM `tw_market` WHERE `status` = 1 AND `name` = 'mc_eth' LIMIT 1
+		514132 Query	SELECT * FROM `tw_trade_log` WHERE `market` = 'mc_eth' ORDER BY addtime desc LIMIT 1
+		514132 Query	SELECT * FROM `tw_coin` WHERE `status` = 1
+		514132 Query	SELECT * FROM `tw_user_coin` WHERE `userid` = 153152 LIMIT 1
+		514132 Query	SELECT * FROM `tw_user` WHERE `id` = 153152 LIMIT 1
+		514132 Query	SELECT * FROM `tw_market`
+		514132 Quit	
+
+
+
+
+交易页QPS   1.96  (QPS太低，逻辑可能有问题 可能原因分析： 数据库操作造成的)
+
+Server Software:        
+Server Hostname:        www.meicoin.pro
+Server Port:            80
+
+Document Path:          /Trade/index/market/mc_eth.html
+Document Length:        76544 bytes
+
+Concurrency Level:      4
+Time taken for tests:   51.073 seconds
+Complete requests:      100
+Failed requests:        38
+   (Connect: 0, Receive: 0, Length: 38, Exceptions: 0)
+Total transferred:      7690864 bytes
+HTML transferred:       7654464 bytes
+Requests per second:    1.96 [#/sec] (mean)
+Time per request:       2042.907 [ms] (mean)
+Time per request:       510.727 [ms] (mean, across all concurrent requests)
+Transfer rate:          147.06 [Kbytes/sec] received
+
+Connection Times (ms)
+              min  mean[+/-sd] median   max
+Connect:       38   40   1.4     40      46
+Processing:   747 1974 1130.1   1547    7728
+Waiting:      591 1829 1128.3   1406    7565
+Total:        785 2013 1130.3   1587    7768
+
+
+访问交易页执行的SQL语句：
+		513988 Connect	root@localhost on tjyhy
+		513988 Query	SET NAMES utf8
+		513988 Query	SELECT * FROM `tw_user_log` WHERE `userid` = 153152 AND `type` = 'login' AND `state` = 1 AND `id` < '61559' ORDER BY id desc LIMIT 1
+		513988 Query	SELECT * FROM `tw_user_log` WHERE `userid` = 153152 AND `type` = 'login' AND `state` = 1 AND `id` > '61559' ORDER BY id desc LIMIT 1
+		513988 Query	SELECT * FROM `tw_user` WHERE ( id = 153152 ) LIMIT 1
+		513988 Query	SELECT * FROM `tw_user_log` WHERE `userid` = 153152 AND `type` = 'login' AND `session_key` = 'h4ha4qecupp8ur4pb2tgnoju30' AND `state` = 1 ORDER BY id desc LIMIT 1
+		513988 Query	SELECT * FROM `tw_user_coin` WHERE `userid` = 153152 LIMIT 1
+		513988 Query	SELECT `round` FROM `tw_market` WHERE `name` = 'ltc_btc' LIMIT 1
+		513988 Query	SELECT `title` FROM `tw_coin` WHERE `name` = 'ltc' LIMIT 1
+		513988 Query	SELECT `img` FROM `tw_coin` WHERE `name` = 'ltc' LIMIT 1
+		513988 Query	SELECT `round` FROM `tw_market` WHERE `name` = 'eth_btc' LIMIT 1
+		513988 Query	SELECT `title` FROM `tw_coin` WHERE `name` = 'eth' LIMIT 1
+		513988 Query	SELECT `img` FROM `tw_coin` WHERE `name` = 'eth' LIMIT 1
+		513988 Query	SELECT `round` FROM `tw_market` WHERE `name` = 'btc_btc' LIMIT 1
+		513988 Query	SELECT `title` FROM `tw_coin` WHERE `name` = 'btc' LIMIT 1
+		513988 Query	SELECT `img` FROM `tw_coin` WHERE `name` = 'btc' LIMIT 1
+		513988 Query	SELECT `round` FROM `tw_market` WHERE `name` = 'mc_btc' LIMIT 1
+		513988 Query	SELECT `title` FROM `tw_coin` WHERE `name` = 'mc' LIMIT 1
+		513988 Query	SELECT `img` FROM `tw_coin` WHERE `name` = 'mc' LIMIT 1
+		513988 Query	SELECT `round` FROM `tw_market` WHERE `name` = 'eos_btc' LIMIT 1
+		513988 Query	SELECT `title` FROM `tw_coin` WHERE `name` = 'eos' LIMIT 1
+		513988 Query	SELECT `img` FROM `tw_coin` WHERE `name` = 'eos' LIMIT 1
+		513988 Query	SELECT `round` FROM `tw_market` WHERE `name` = 'bch_btc' LIMIT 1
+		513988 Query	SELECT `title` FROM `tw_coin` WHERE `name` = 'bch' LIMIT 1
+		513988 Query	SELECT `img` FROM `tw_coin` WHERE `name` = 'bch' LIMIT 1
+		513988 Query	SELECT * FROM `tw_link` WHERE `status` = 1 AND `look_type` = 1 ORDER BY sort asc ,id desc
+		513988 Query	SELECT * FROM `tw_article` WHERE `type` = 'notice' AND `status` = 1 AND `index` = 1 ORDER BY id desc LIMIT 1
+		513988 Query	SELECT * FROM `tw_article_type` WHERE `name` = 'notice' LIMIT 1
+180630 12:19:07	513988 Query	SELECT `price` FROM `tw_trade` WHERE `status` = 0 AND `type` = 1 AND `market` = 'mc_eth' ORDER BY price desc LIMIT 1
+		513988 Query	SELECT `price` FROM `tw_trade` WHERE `status` = 0 AND `type` = 2 AND `market` = 'mc_eth' ORDER BY price asc LIMIT 1
+		513988 Query	SELECT * FROM `tw_market` WHERE `name` = 'mc_eth' LIMIT 1
+		513988 Query	SELECT * FROM `tw_trade_log` WHERE `status` = 1 AND `market` = 'mc_eth' ORDER BY id desc LIMIT 20
+		513988 Query	SELECT `id`,`price`,sum(num-deal)as nums FROM `tw_trade` WHERE `status` = 0 AND `type` = 1 AND `market` = 'mc_eth' GROUP BY price ORDER BY price desc LIMIT 6
+		513988 Query	SELECT `id`,`price`,sum(num-deal)as nums FROM `tw_trade` WHERE `status` = 0 AND `type` = 2 AND `market` = 'mc_eth' GROUP BY price ORDER BY price asc LIMIT 6
+		513988 Query	SELECT * FROM `tw_market` WHERE `status` = 1 AND `name` = 'mc_eth' LIMIT 1
+		513988 Query	SELECT * FROM `tw_trade_log` WHERE `market` = 'mc_eth' ORDER BY addtime desc LIMIT 1
+		513988 Query	SELECT * FROM `tw_coin` WHERE `status` = 1
+		513988 Query	SELECT * FROM `tw_user_coin` WHERE `userid` = 153152 LIMIT 1
+		513988 Query	SELECT * FROM `tw_user` WHERE `id` = 153152 LIMIT 1
+		513988 Query	SELECT * FROM `tw_market`
+		513988 Quit
+
+
+
+
+交易页面的API
+
+API 1:  kline (数据: 52KB )  QPS: 5.27  
+
+Server Software:        
+Server Hostname:        www.meicoin.pro
+Server Port:            80
+
+Document Path:          /Home/Ajax/kline?market=mc_eth
+Document Length:        51947 bytes
+
+Concurrency Level:      200
+Time taken for tests:   379.293 seconds
+Complete requests:      2000
+Failed requests:        403
+   (Connect: 0, Receive: 0, Length: 403, Exceptions: 0)
+Non-2xx responses:      403
+Total transferred:      83794120 bytes
+HTML transferred:       83068975 bytes
+Requests per second:    5.27 [#/sec] (mean)
+Time per request:       37929.325 [ms] (mean)
+Time per request:       189.647 [ms] (mean, across all concurrent requests)
+Transfer rate:          215.74 [Kbytes/sec] received
+
+Connection Times (ms)
+              min  mean[+/-sd] median   max
+Connect:       38   40   1.8     40      49
+Processing:   337 35417 17271.3  32309   60450
+Waiting:      258 35331 17302.4  32186   60450
+Total:        375 35457 17271.3  32349   60489
+
+
+
+API 2: getDepth (数据: 约0.5KB  大小446B  )  QPS: 22 
+
+Server Software:        
+Server Hostname:        www.meicoin.pro
+Server Port:            80
+
+Document Path:          /Ajax/getDepth?market=mc_eth&jjcoin=btc&trade_moshi=1&t=0.5430994790632493
+Document Length:        446 bytes
+
+Concurrency Level:      200
+Time taken for tests:   88.458 seconds
+Complete requests:      2000
+Failed requests:        0
+Total transferred:      1732000 bytes
+HTML transferred:       892000 bytes
+Requests per second:    22.61 [#/sec] (mean)
+Time per request:       8845.752 [ms] (mean)
+Time per request:       44.229 [ms] (mean, across all concurrent requests)
+Transfer rate:          19.12 [Kbytes/sec] received
+
+Connection Times (ms)
+              min  mean[+/-sd] median   max
+Connect:       38   40   2.3     40      52
+Processing:   282 8376 5521.5   7162   35394
+Waiting:      282 8376 5521.5   7162   35394
+Total:        320 8417 5521.4   7200   35433
+
+
+
+API3: getJsonTop (数据: 约0.8KB  大小740B  )  QPS:  20.73
+
+Server Software:        
+Server Hostname:        www.meicoin.pro
+Server Port:            80
+
+Document Path:          /Ajax/getJsonTop?market=mc_eth&t=0.7273979342648424
+Document Length:        746 bytes
+
+Concurrency Level:      200
+Time taken for tests:   96.482 seconds
+Complete requests:      2000
+Failed requests:        0
+Total transferred:      2332000 bytes
+HTML transferred:       1492000 bytes
+Requests per second:    20.73 [#/sec] (mean)
+Time per request:       9648.181 [ms] (mean)
+Time per request:       48.241 [ms] (mean, across all concurrent requests)
+Transfer rate:          23.60 [Kbytes/sec] received
+
+Connection Times (ms)
+              min  mean[+/-sd] median   max
+Connect:       38   40   2.7     40      56
+Processing:   216 9131 6266.6   7667   56903
+Waiting:      216 9131 6266.6   7667   56903
+Total:        255 9171 6266.5   7708   56944
+
+
+
+
+API4: getTradelog  (数据: 1.2KB )  QPS: 24
+
+Server Software:        
+Server Hostname:        www.meicoin.pro
+Server Port:            80
+
+Document Path:          /Ajax/getTradelog?market=mc_eth&jjcoin=btc&t=0.5559218781360911
+Document Length:        1249 bytes
+
+Concurrency Level:      200
+Time taken for tests:   82.640 seconds
+Complete requests:      2000
+Failed requests:        0
+Total transferred:      3338000 bytes
+HTML transferred:       2498000 bytes
+Requests per second:    24.20 [#/sec] (mean)
+Time per request:       8264.047 [ms] (mean)
+Time per request:       41.320 [ms] (mean, across all concurrent requests)
+Transfer rate:          39.45 [Kbytes/sec] received
+
+Connection Times (ms)
+              min  mean[+/-sd] median   max
+Connect:       38   40   2.0     40      51
+Processing:   104 7795 5344.8   6480   37955
+Waiting:      104 7795 5344.8   6480   37955
+Total:        142 7835 5344.8   6519   37994
+
+
+
+API5:  getEntrustAndUsercoin  (数据: 约0.5KB  大小312B  )  QPS: 22
+
+Server Software:        
+Server Hostname:        www.meicoin.pro
+Server Port:            80
+
+Document Path:          /Ajax/getEntrustAndUsercoin?market=mc_eth&jjcoin=btc&t=0.9793548639787244
+Document Length:        103 bytes
+
+Concurrency Level:      200
+Time taken for tests:   89.248 seconds
+Complete requests:      2000
+Failed requests:        0
+Total transferred:      1046000 bytes
+HTML transferred:       206000 bytes
+Requests per second:    22.41 [#/sec] (mean)
+Time per request:       8924.812 [ms] (mean)
+Time per request:       44.624 [ms] (mean, across all concurrent requests)
+Transfer rate:          11.45 [Kbytes/sec] received
+
+Connection Times (ms)
+              min  mean[+/-sd] median   max
+Connect:       38   40   2.3     40      51
+Processing:   352 8436 5887.8   6978   45055
+Waiting:      352 8436 5887.8   6978   45054
+Total:        392 8476 5887.7   7019   45094
+
+
+
+API6:  getEntrustHistory (数据: 1KB    )  QPS: 20
+
+Server Software:        
+Server Hostname:        www.meicoin.pro
+Server Port:            80
+
+Document Path:          /Ajax/getEntrustHistory?market=mc_eth
+Document Length:        1567 bytes
+
+Concurrency Level:      200
+Time taken for tests:   97.622 seconds
+Complete requests:      2000
+Failed requests:        0
+Total transferred:      3974000 bytes
+HTML transferred:       3134000 bytes
+Requests per second:    20.49 [#/sec] (mean)
+Time per request:       9762.192 [ms] (mean)
+Time per request:       48.811 [ms] (mean, across all concurrent requests)
+Transfer rate:          39.75 [Kbytes/sec] received
+
+Connection Times (ms)
+              min  mean[+/-sd] median   max
+Connect:       38   40   1.9     40      49
+Processing:   522 9241 6184.2   7958   53911
+Waiting:      522 9241 6184.2   7958   53911
+Total:        562 9281 6184.1   7998   53949
+
+
+
+执行的SQL 语句：
+
+		527257 Connect	root@localhost on tjyhy
+		527257 Query	SET NAMES utf8
+		527257 Query	SELECT * FROM `tw_user_log` WHERE `userid` = 153152 AND `type` = 'login' AND `state` = 1 AND `id` < '61559' ORDER BY id desc LIMIT 1
+		527257 Query	SELECT * FROM `tw_user_log` WHERE `userid` = 153152 AND `type` = 'login' AND `state` = 1 AND `id` > '61559' ORDER BY id desc LIMIT 1
+		527257 Query	SELECT * FROM `tw_user` WHERE ( id = 153152 ) LIMIT 1
+		527257 Query	SELECT * FROM `tw_user_log` WHERE `userid` = 153152 AND `type` = 'login' AND `session_key` = 'h4ha4qecupp8ur4pb2tgnoju30' AND `state` = 1 ORDER BY id desc LIMIT 1
+		527257 Query	SELECT `id`,`price`,`num`,`deal`,`mum`,`type`,`fee`,`status`,`addtime` FROM `tw_trade` WHERE `market` = 'mc_eth' AND `userid` = 153152 ORDER BY id desc LIMIT 7
+		527257 Query	SELECT * FROM `tw_trade_log` WHERE `market` = 'mc_eth' AND ( `userid` = '153152' OR `peerid` = '153152' ) ORDER BY id desc LIMIT 7
+		527257 Quit
+
+
+
+
+helloworld测试页  QPS: 181 (符合实际场景)
+
+Server Software:        
+Server Hostname:        www.meicoin.pro
+Server Port:            80
+
+Document Path:          /login/helloworld
+Document Length:        12 bytes
+
+Concurrency Level:      200
+Time taken for tests:   11.027 seconds
+Complete requests:      2000
+Failed requests:        395
+   (Connect: 0, Receive: 0, Length: 395, Exceptions: 0)
+Non-2xx responses:      2000
+Total transferred:      968751 bytes
+HTML transferred:       26904 bytes
+Requests per second:    181.37 [#/sec] (mean)
+Time per request:       1102.727 [ms] (mean)
+Time per request:       5.514 [ms] (mean, across all concurrent requests)
+Transfer rate:          85.79 [Kbytes/sec] received
+
+Connection Times (ms)
+              min  mean[+/-sd] median   max
+Connect:       38   40   1.9     40      49
+Processing:   438 1036 226.3   1030    2272
+Waiting:      438 1036 226.3   1030    2272
+Total:        478 1076 226.7   1071    2310
+
+
+
+

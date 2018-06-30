@@ -1,0 +1,111 @@
+一、测试目的： 测试集群的承载能力
+
+二、测试目标： 1. 主页的QPS  2. 交易页面的QPS  3. 交易页面6个API的QPS  4. helloworld渲染页面
+
+三、测试对象： B/C/D三台Server  （由于SLB具有会话保持特性，同一台机器的请求只会被转发给其中一台Server，因此SLB的承载能力，大致就是所有集群机器的容量之和）
+
+四、测试方法： 
+
+1. 单台机器测试时，由于单个机器对外出口带宽受限，因此请求流量也需要走SLB，将非测试机器的权重设置为0，即可通过SLB只测试该服务器的性能
+
+2. 为确保测试链接正确，可以通过访问链接地址，或者wget获取链接数据来判断，(wget 通过--header添加Cookie，交易页面不添加cookie是测试不了的)
+
+3. 测试时都使用www.meicoin.pro进行测试，在本地hosts文件中做域名解析  47.52.85.198 www.meicoin.pro
+
+
+五、测试环境： 
+System: 16.04.2-Ubuntu  
+CPU: i7-8700K@3.70GHz 6Core 12Thread  
+Memory: 16G  
+BW: 16Mb(专网)  下载速度受限(1.6MB左右，测试机最大主页访问能力45qps左右，最大访问交易页能力 20qps 左右)
+
+
+六、测试指令： 
+
+
+主页QPS （37KB）
+
+ab -r -c 200 -n 2000  http://www.meicoin.pro/
+
+交易页QPS (75KB,   注意其中 -H的cookie 参数需要实时获取)
+
+ab -r -c 50 -n 1000  -H "Cookie:__cfduid=da6ba3394d54065b93f0e2362a5b5b5d51529456825; PHPSESSID=h4ha4qecupp8ur4pb2tgnoju30; landlan=1; _hjIncludedInSample=1; PHPSESSID=nhj0t7p4ajv92qok9qkukdtbl0; landlan=1; total=; _hjIncludedInSample=1; _ga=GA1.2.1156639940.1529735184; think_language=zh-CN; userName=15555564455; cookie_username=15555564455; SERVERID=dbd8bb77eb20c19d024afc02e389695a|1530326687|1530266762"   http://www.meicoin.pro/Trade/index/market/mc_eth.html
+
+
+ab -r -c 1 -n 1  -H "Cookie:__cfduid=da6ba3394d54065b93f0e2362a5b5b5d51529456825; PHPSESSID=h4ha4qecupp8ur4pb2tgnoju30; landlan=1; _hjIncludedInSample=1; PHPSESSID=nhj0t7p4ajv92qok9qkukdtbl0; landlan=1; total=; _hjIncludedInSample=1; _ga=GA1.2.1156639940.1529735184; think_language=zh-CN; userName=15555564455; cookie_username=15555564455; SERVERID=dbd8bb77eb20c19d024afc02e389695a|1530326687|1530266762"   http://www.meicoin.pro/Trade/index/market/mc_eth.html
+
+/www/server/apache/bin/ab  -r -c 200 -n 2000  -H "Cookie:__cfduid=da6ba3394d54065b93f0e2362a5b5b5d51529456825; PHPSESSID=h4ha4qecupp8ur4pb2tgnoju30; landlan=1; _hjIncludedInSample=1; PHPSESSID=nhj0t7p4ajv92qok9qkukdtbl0; landlan=1; total=; _hjIncludedInSample=1; _ga=GA1.2.1156639940.1529735184; think_language=zh-CN; userName=15555564455; cookie_username=15555564455; SERVERID=dbd8bb77eb20c19d024afc02e389695a|1530326687|1530266762"   http://172.31.82.131/Trade/index/market/mc_eth.html
+
+
+交易页面的API（ 都需要带上cookie）
+
+1. http://www.meicoin.pro/Home/Ajax/kline?market=mc_eth  (数据: 47KB )    
+
+
+ab -r -c 200 -n 2000  -H "Cookie:__cfduid=da6ba3394d54065b93f0e2362a5b5b5d51529456825; PHPSESSID=h4ha4qecupp8ur4pb2tgnoju30; landlan=1; _hjIncludedInSample=1; PHPSESSID=nhj0t7p4ajv92qok9qkukdtbl0; landlan=1; total=; _hjIncludedInSample=1; _ga=GA1.2.1156639940.1529735184; think_language=zh-CN; userName=15555564455; cookie_username=15555564455; SERVERID=dbd8bb77eb20c19d024afc02e389695a|1530326687|1530266762"  http://www.meicoin.pro/Home/Ajax/kline?market=mc_eth 
+
+本地测试指令: 
+/www/server/apache/bin/ab  -r -c 200 -n 2000  -H "Cookie:__cfduid=da6ba3394d54065b93f0e2362a5b5b5d51529456825; PHPSESSID=h4ha4qecupp8ur4pb2tgnoju30; landlan=1; _hjIncludedInSample=1; PHPSESSID=nhj0t7p4ajv92qok9qkukdtbl0; landlan=1; total=; _hjIncludedInSample=1; _ga=GA1.2.1156639940.1529735184; think_language=zh-CN; userName=15555564455; cookie_username=15555564455; SERVERID=dbd8bb77eb20c19d024afc02e389695a|1530326687|1530266762"  http://172.31.82.131/Home/Ajax/kline?market=mc_eth
+
+
+2. http://www.meicoin.pro/Ajax/getDepth?market=mc_eth&jjcoin=btc&trade_moshi=1&t=0.5430994790632493 
+
+
+wget --header="Cookie:__cfduid=da6ba3394d54065b93f0e2362a5b5b5d51529456825; PHPSESSID=h4ha4qecupp8ur4pb2tgnoju30; landlan=1; _hjIncludedInSample=1; PHPSESSID=nhj0t7p4ajv92qok9qkukdtbl0; landlan=1; total=; _hjIncludedInSample=1; _ga=GA1.2.1156639940.1529735184; think_language=zh-CN; userName=15555564455; cookie_username=15555564455; SERVERID=dbd8bb77eb20c19d024afc02e389695a|1530326687|1530266762" http://www.meicoin.pro/Ajax/getDepth?market=mc_eth&jjcoin=btc&trade_moshi=1&t=0.5430994790632493
+
+
+
+ab -r -c 200 -n 2000  -H "Cookie:__cfduid=da6ba3394d54065b93f0e2362a5b5b5d51529456825; PHPSESSID=h4ha4qecupp8ur4pb2tgnoju30; landlan=1; _hjIncludedInSample=1; PHPSESSID=nhj0t7p4ajv92qok9qkukdtbl0; landlan=1; total=; _hjIncludedInSample=1; _ga=GA1.2.1156639940.1529735184; think_language=zh-CN; userName=15555564455; cookie_username=15555564455; SERVERID=dbd8bb77eb20c19d024afc02e389695a|1530326687|1530266762" http://www.meicoin.pro/Ajax/getDepth?market=mc_eth&jjcoin=btc&trade_moshi=1&t=0.5430994790632493
+
+
+
+
+3. http://www.meicoin.pro/Ajax/getJsonTop?market=mc_eth&t=0.7273979342648424 
+
+
+
+wget --header="Cookie:__cfduid=da6ba3394d54065b93f0e2362a5b5b5d51529456825; PHPSESSID=h4ha4qecupp8ur4pb2tgnoju30; landlan=1; _hjIncludedInSample=1; PHPSESSID=nhj0t7p4ajv92qok9qkukdtbl0; landlan=1; total=; _hjIncludedInSample=1; _ga=GA1.2.1156639940.1529735184; think_language=zh-CN; userName=15555564455; cookie_username=15555564455; SERVERID=dbd8bb77eb20c19d024afc02e389695a|1530326687|1530266762" http://www.meicoin.pro/Ajax/getJsonTop?market=mc_eth&t=0.7273979342648424
+
+
+ab -r -c 200 -n 2000  -H "Cookie:__cfduid=da6ba3394d54065b93f0e2362a5b5b5d51529456825; PHPSESSID=h4ha4qecupp8ur4pb2tgnoju30; landlan=1; _hjIncludedInSample=1; PHPSESSID=nhj0t7p4ajv92qok9qkukdtbl0; landlan=1; total=; _hjIncludedInSample=1; _ga=GA1.2.1156639940.1529735184; think_language=zh-CN; userName=15555564455; cookie_username=15555564455; SERVERID=dbd8bb77eb20c19d024afc02e389695a|1530326687|1530266762" http://www.meicoin.pro/Ajax/getJsonTop?market=mc_eth&t=0.7273979342648424 
+
+
+4. http://www.meicoin.pro/Ajax/getTradelog?market=mc_eth&jjcoin=btc&t=0.5559218781360911 
+
+
+
+wget --header="Cookie:__cfduid=da6ba3394d54065b93f0e2362a5b5b5d51529456825; PHPSESSID=h4ha4qecupp8ur4pb2tgnoju30; landlan=1; _hjIncludedInSample=1; PHPSESSID=nhj0t7p4ajv92qok9qkukdtbl0; landlan=1; total=; _hjIncludedInSample=1; _ga=GA1.2.1156639940.1529735184; think_language=zh-CN; userName=15555564455; cookie_username=15555564455; SERVERID=dbd8bb77eb20c19d024afc02e389695a|1530326687|1530266762" http://www.meicoin.pro/Ajax/getTradelog?market=mc_eth&jjcoin=btc&t=0.5559218781360911 
+
+
+ab -r -c 200 -n 2000  -H "Cookie:__cfduid=da6ba3394d54065b93f0e2362a5b5b5d51529456825; PHPSESSID=h4ha4qecupp8ur4pb2tgnoju30; landlan=1; _hjIncludedInSample=1; PHPSESSID=nhj0t7p4ajv92qok9qkukdtbl0; landlan=1; total=; _hjIncludedInSample=1; _ga=GA1.2.1156639940.1529735184; think_language=zh-CN; userName=15555564455; cookie_username=15555564455; SERVERID=dbd8bb77eb20c19d024afc02e389695a|1530326687|1530266762" http://www.meicoin.pro/Ajax/getTradelog?market=mc_eth&jjcoin=btc&t=0.5559218781360911 
+
+
+
+
+
+5. http://www.meicoin.pro/Ajax/getEntrustAndUsercoin?market=mc_eth&jjcoin=btc&t=0.9793548639787244 
+
+
+
+wget --header="Cookie:__cfduid=da6ba3394d54065b93f0e2362a5b5b5d51529456825; PHPSESSID=h4ha4qecupp8ur4pb2tgnoju30; landlan=1; _hjIncludedInSample=1; PHPSESSID=nhj0t7p4ajv92qok9qkukdtbl0; landlan=1; total=; _hjIncludedInSample=1; _ga=GA1.2.1156639940.1529735184; think_language=zh-CN; userName=15555564455; cookie_username=15555564455; SERVERID=dbd8bb77eb20c19d024afc02e389695a|1530326687|1530266762" http://www.meicoin.pro/Ajax/getEntrustAndUsercoin?market=mc_eth&jjcoin=btc&t=0.9793548639787244
+
+
+ab -r -c 200 -n 2000  -H "Cookie:__cfduid=da6ba3394d54065b93f0e2362a5b5b5d51529456825; PHPSESSID=h4ha4qecupp8ur4pb2tgnoju30; landlan=1; _hjIncludedInSample=1; PHPSESSID=nhj0t7p4ajv92qok9qkukdtbl0; landlan=1; total=; _hjIncludedInSample=1; _ga=GA1.2.1156639940.1529735184; think_language=zh-CN; userName=15555564455; cookie_username=15555564455; SERVERID=dbd8bb77eb20c19d024afc02e389695a|1530326687|1530266762" http://www.meicoin.pro/Ajax/getEntrustAndUsercoin?market=mc_eth&jjcoin=btc&t=0.9793548639787244
+
+
+6. http://www.meicoin.pro/Ajax/getEntrustHistory?market=mc_eth 
+
+wget --header="Cookie:__cfduid=da6ba3394d54065b93f0e2362a5b5b5d51529456825; PHPSESSID=h4ha4qecupp8ur4pb2tgnoju30; landlan=1; _hjIncludedInSample=1; PHPSESSID=nhj0t7p4ajv92qok9qkukdtbl0; landlan=1; total=; _hjIncludedInSample=1; _ga=GA1.2.1156639940.1529735184; think_language=zh-CN; userName=15555564455; cookie_username=15555564455; SERVERID=dbd8bb77eb20c19d024afc02e389695a|1530326687|1530266762" http://www.meicoin.pro/Ajax/getEntrustHistory?market=mc_eth
+
+
+ab -r -c 1 -n 1  -H "Cookie:__cfduid=da6ba3394d54065b93f0e2362a5b5b5d51529456825; PHPSESSID=h4ha4qecupp8ur4pb2tgnoju30; landlan=1; _hjIncludedInSample=1; PHPSESSID=nhj0t7p4ajv92qok9qkukdtbl0; landlan=1; total=; _hjIncludedInSample=1; _ga=GA1.2.1156639940.1529735184; think_language=zh-CN; userName=15555564455; cookie_username=15555564455; SERVERID=dbd8bb77eb20c19d024afc02e389695a|1530326687|1530266762" http://www.meicoin.pro/Ajax/getEntrustHistory?market=mc_eth
+
+ab -r -c 200 -n 2000  -H "Cookie:__cfduid=da6ba3394d54065b93f0e2362a5b5b5d51529456825; PHPSESSID=h4ha4qecupp8ur4pb2tgnoju30; landlan=1; _hjIncludedInSample=1; PHPSESSID=nhj0t7p4ajv92qok9qkukdtbl0; landlan=1; total=; _hjIncludedInSample=1; _ga=GA1.2.1156639940.1529735184; think_language=zh-CN; userName=15555564455; cookie_username=15555564455; SERVERID=dbd8bb77eb20c19d024afc02e389695a|1530326687|1530266762" http://www.meicoin.pro/Ajax/getEntrustHistory?market=mc_eth
+
+helloworld测试页面
+
+ab -r -c 200 -n 2000  http://www.meicoin.pro/login/helloworld
+
+
+
+
